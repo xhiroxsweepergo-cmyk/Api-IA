@@ -29,3 +29,5 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.app-token.outputs.token }}
+          claude_args: |
+            --allowedTools "Read,Write,Edit,Bash(*)"
