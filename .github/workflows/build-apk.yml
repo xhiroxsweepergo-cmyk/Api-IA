@@ -2,11 +2,11 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
     paths:
-      - 'gradlew'
       - 'app/**'
-      - 'gradle/**'
+      - 'settings.gradle'
+      - '.github/workflows/build-apk.yml'
   workflow_dispatch:
 
 jobs:
@@ -17,23 +17,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configurar Java 17
-        if: hashFiles('gradlew') != ''
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Dar permisos a gradlew
-        if: hashFiles('gradlew') != ''
-        run: chmod +x ./gradlew
+      - name: Configurar Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
 
       - name: Compilar APK Debug
-        if: hashFiles('gradlew') != ''
-        run: ./gradlew assembleDebug
+        run: gradle assembleDebug --stacktrace -Dorg.gradle.jvmargs=-Xmx2g
 
       - name: Subir APK para descargar
-        if: hashFiles('gradlew') != ''
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
