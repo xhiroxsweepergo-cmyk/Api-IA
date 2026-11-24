@@ -3,6 +3,10 @@ name: Build Android APK
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'gradlew'
+      - 'app/**'
+      - 'gradle/**'
   workflow_dispatch:
 
 jobs:
@@ -13,18 +17,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configurar Java 17
+        if: hashFiles('gradlew') != ''
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Dar permisos a gradlew
+        if: hashFiles('gradlew') != ''
         run: chmod +x ./gradlew
 
       - name: Compilar APK Debug
+        if: hashFiles('gradlew') != ''
         run: ./gradlew assembleDebug
 
       - name: Subir APK para descargar
+        if: hashFiles('gradlew') != ''
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
